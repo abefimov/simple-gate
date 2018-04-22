@@ -1,0 +1,5 @@
+*.sol linguist-language=Solidity
+api/* linguist-detectable=false
+app/* linguist-detectable=false
+tests/token.js linguist-detectable=false
+tests/blacklist.js linguist-detectable=false
