@@ -80,10 +80,10 @@ func main() {
 	var unpaidAmount = 0
 
 	for key := range payInMap {
-		tx, ok := payOutMap[key]
+		_, ok := payOutMap[key]
 		if !ok {
 			t := payInMap[key]
-			payInNotPayOut[tx.txNumber.String()] = t
+			payInNotPayOut[key] = t
 			unpaidAmount++
 		}
 	}
@@ -104,7 +104,6 @@ func main() {
 	}
 
 	opts := cmd.GetPrivateTxOpts(key, 100000)
-
 	for key := range payInNotPayOut {
 		t := payInNotPayOut[key]
 		tx, err := gkPrivate.Payout(opts, t.from, t.value, t.txNumber)
