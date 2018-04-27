@@ -22,7 +22,7 @@ func main() {
 	}
 	value := big.NewInt(int64(val))
 
-	client, err := ethclient.Dial(cmd.Endpoint)
+	clientPrivate, err := ethclient.Dial(cmd.EndpointPrivate)
 	if err != nil {
 		cmd.HandleError(err, "init live client")
 	}
@@ -32,9 +32,9 @@ func main() {
 		cmd.HandleError(err, "decrypt key")
 	}
 
-	opts := cmd.GetLiveTxOpts(key, 100000)
+	opts := cmd.GetPrivateTxOpts(key, 100000)
 
-	token, err := cmd.InitLiveToken(client)
+	token, err := cmd.InitSidechainToken(clientPrivate)
 	if err != nil {
 		cmd.HandleError(err, "bind live token")
 	}
@@ -47,7 +47,7 @@ func main() {
 		cmd.HandleError(err, "getting balance")
 	}
 
-	allowance, err := token.Allowance(&bind.CallOpts{Pending: true}, address, simple_gate.GatekeeperLiveAddr())
+	allowance, err := token.Allowance(&bind.CallOpts{Pending: true}, address, simple_gate.GatekeeperSidechainAddr())
 	if err != nil {
 		cmd.HandleError(err, "getting allowance")
 	}
@@ -62,13 +62,13 @@ func main() {
 		log.Fatalln("lack of balance")
 	}
 
-	gk, err := cmd.InitLiveGatekeeper(client)
+	gkPrivate, err := cmd.InitPrivateGatekeeper(clientPrivate)
 	if err != nil {
 		log.Fatalln(err)
 		return
 	}
 
-	tx, err := gk.PayIn(opts, value)
+	tx, err := gkPrivate.PayIn(opts, value)
 	if err != nil {
 		log.Fatalln(err)
 		return

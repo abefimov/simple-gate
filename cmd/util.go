@@ -13,7 +13,8 @@ import (
 
 var (
 	EndpointPrivate string = "https://private-dev.sonm.io"
-	Endpoint        string = "https://rinkeby.infura.io/00iTrs5PIy0uGODwcsrb"
+	//Endpoint        string = "https://rinkeby.infura.io/00iTrs5PIy0uGODwcsrb"
+	Endpoint        string = "http://localhost:8545"
 )
 
 func HandleError(err error, message string) {
@@ -22,15 +23,15 @@ func HandleError(err error, message string) {
 }
 
 func InitSidechainToken(client *ethclient.Client) (*api.StandardToken, error) {
-	return api.NewStandardToken(simple_gate.SNMLAddr(), client)
+	return api.NewStandardToken(simple_gate.SNMSidechainAddr(), client)
 }
 
 func InitLiveToken(client *ethclient.Client) (*api.StandardToken, error) {
-	return api.NewStandardToken(simple_gate.SNMTLiveAddr(), client)
+	return api.NewStandardToken(simple_gate.SNMLiveAddr(), client)
 }
 
 func InitPrivateGatekeeper(client *ethclient.Client) (*api.Gatekeeper, error) {
-	return api.NewGatekeeper(simple_gate.GatekeeperAddr(), client)
+	return api.NewGatekeeper(simple_gate.GatekeeperSidechainAddr(), client)
 }
 
 func InitLiveGatekeeper(client *ethclient.Client) (*api.Gatekeeper, error) {

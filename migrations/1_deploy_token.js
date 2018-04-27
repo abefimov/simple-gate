@@ -1,9 +1,11 @@
-var SNMLToken = artifacts.require("./SNMLToken.sol");
+var SNM = artifacts.require("./SNM.sol");
 
 module.exports = function (deployer, network) {
     if (network === "private") {
-        deployer.deploy(SNMLToken, {gasPrice: 0})
-    } else if (network === "rinkeby") { } else {
-        deployer.deploy(SNMLToken)
+        deployer.deploy(SNM, {gasPrice: 0})
+    } else if (network === "rinkeby") {
+        // rinkeby token - 0x06bda3cf79946e8b32a0bb6a3daa174b577c55b5
+    } else {
+        deployer.deploy(SNM)
     }
 };

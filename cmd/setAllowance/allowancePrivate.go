@@ -13,31 +13,31 @@ import (
 
 var (
 	//HexKey string = ""
-	HexKey string = ""
+	hexKey string = ""
 )
 
 func main() {
-	client, err := ethclient.Dial(cmd.Endpoint)
+	clientPrivate, err := ethclient.Dial(cmd.EndpointPrivate)
 	if err != nil {
 		cmd.HandleError(err, "init live client")
 	}
 
-	key, err := crypto.HexToECDSA(HexKey)
+	key, err := crypto.HexToECDSA(hexKey)
 	if err != nil {
 		cmd.HandleError(err, "decrypt key")
 	}
 
 	opts := bind.NewKeyedTransactor(key)
 	opts.GasLimit = 100000
-	opts.GasPrice = big.NewInt(50000000000)
+	opts.GasPrice = big.NewInt(0)
 
-	gk, err := cmd.InitLiveToken(client)
+	token, err := cmd.InitSidechainToken(clientPrivate)
 	if err != nil {
 		log.Fatalln(err)
 		return
 	}
 
-	tx, err := gk.Approve(opts, common.HexToAddress(simple_gate.GatekeeperLiveAddress), big.NewInt(1000000000000000))
+	tx, err := token.Approve(opts, common.HexToAddress(simple_gate.GatekeeperSidechainAddress), big.NewInt(1000000000000000))
 	if err != nil {
 		log.Fatalln(err)
 		return

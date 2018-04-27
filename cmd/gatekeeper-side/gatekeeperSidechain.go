@@ -44,12 +44,15 @@ func main() {
 	log.Println("Getting PayIn transactions")
 	logs, err := clientPrivate.FilterLogs(context.Background(), ethereum.FilterQuery{
 		Topics:    [][]common.Hash{{simple_gate.PayInTopicHash()}},
-		Addresses: []common.Address{simple_gate.GatekeeperAddr()},
+		Addresses: []common.Address{simple_gate.GatekeeperSidechainAddr()},
 	})
+	if err != nil {
+		cmd.HandleError(err, "getting PayIn logs")
+	}
 
 	for _, l := range logs {
-		if l.Topics[0].String() == simple_gate.PayOutTopicHash().String() {
-			payOutMap[l.Topics[2].Big().String()] = PayTrx{
+		if l.Topics[0].String() == simple_gate.PayInTopicHash().String() {
+			payInMap[l.Topics[2].Big().String()] = PayTrx{
 				from:     common.HexToAddress(l.Topics[1].Hex()),
 				txNumber: l.Topics[2].Big(),
 				value:    l.Topics[3].Big(),
@@ -57,16 +60,24 @@ func main() {
 		}
 	}
 
+
+
+	log.Println(len(payInMap))
+
 	// Getting already paid transactions
 	log.Println("Getting PayOut transactions")
 	logs, err = client.FilterLogs(context.Background(), ethereum.FilterQuery{
 		Topics:    [][]common.Hash{{simple_gate.PayOutTopicHash()}},
 		Addresses: []common.Address{simple_gate.GatekeeperLiveAddr()},
 	})
+	if err != nil {
+		cmd.HandleError(err, "getting Payout logs")
+	}
+
 
 	for _, l := range logs {
-		if l.Topics[0].String() == simple_gate.PayInTopicHash().String() {
-			payInMap[l.Topics[2].Big().String()] = PayTrx{
+		if l.Topics[0].String() == simple_gate.PayOutTopicHash().String() {
+			payOutMap[l.Topics[2].Big().String()] = PayTrx{
 				from:     common.HexToAddress(l.Topics[1].Hex()),
 				txNumber: l.Topics[2].Big(),
 				value:    l.Topics[3].Big(),
@@ -98,15 +109,15 @@ func main() {
 		cmd.HandleError(err, "decrypt key")
 	}
 
-	gkPrivate, err := cmd.InitPrivateGatekeeper(clientPrivate)
+	gk, err := cmd.InitLiveGatekeeper(client)
 	if err != nil {
 		cmd.HandleError(err, "bind private gatekeeper")
 	}
 
-	opts := cmd.GetPrivateTxOpts(key, 100000)
+	opts := cmd.GetLiveTxOpts(key, 100000)
 	for key := range payInNotPayOut {
 		t := payInNotPayOut[key]
-		tx, err := gkPrivate.Payout(opts, t.from, t.value, t.txNumber)
+		tx, err := gk.Payout(opts, t.from, t.value, t.txNumber)
 		if err != nil {
 			cmd.HandleError(err, "send payout transaction")
 		}

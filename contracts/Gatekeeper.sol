@@ -2,7 +2,6 @@ pragma solidity ^0.4.21;
 
 
 import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
-import "./SNMLToken.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
@@ -10,10 +9,10 @@ contract Gatekeeper is Ownable {
 
     using SafeMath for uint256;
 
-    SNMLToken token;
+    StandardToken token;
 
     function Gatekeeper(address _token) public {
-        token = SNMLToken(_token);
+        token = StandardToken(_token);
         owner = msg.sender;
     }
 
@@ -27,7 +26,7 @@ contract Gatekeeper is Ownable {
     function PayIn(uint256 _value) public {
         require(token.transferFrom(msg.sender, this, _value));
         transactionAmount = transactionAmount + 1;
-        PayInTrx(this, transactionAmount, _value);
+        PayInTrx(msg.sender, transactionAmount, _value);
     }
 
     function Payout(address _to, uint256 _value, uint256 _txNumber) public onlyOwner{

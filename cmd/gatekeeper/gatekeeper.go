@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	HexKey string = ""
+	hexKey string = ""
 )
 
 type PayTrx struct {
@@ -61,7 +61,7 @@ func main() {
 	log.Println("Getting PayOut transactions")
 	logs, err = clientPrivate.FilterLogs(context.Background(), ethereum.FilterQuery{
 		Topics:    [][]common.Hash{{simple_gate.PayOutTopicHash()}},
-		Addresses: []common.Address{simple_gate.GatekeeperAddr()},
+		Addresses: []common.Address{simple_gate.GatekeeperSidechainAddr()},
 	})
 
 	for _, l := range logs {
@@ -93,7 +93,7 @@ func main() {
 	}
 
 	// Sends entire transactions
-	key, err := crypto.HexToECDSA(HexKey)
+	key, err := crypto.HexToECDSA(hexKey)
 	if err != nil {
 		cmd.HandleError(err, "decrypt key")
 	}

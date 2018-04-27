@@ -1,5 +1,5 @@
 const Gatekeeper = artifacts.require('./Gatekeeper.sol');
-const SNMLToken = artifacts.require("./SNMLToken.sol");
+const SNM = artifacts.require("./SNM.sol");
 
 const assertRevert = require('./helpers/assertRevert.js');
 
@@ -14,7 +14,7 @@ contract('Gatekeeper', async function (accounts) {
 
     before(async function () {
         gatekeeper = await Gatekeeper.deployed();
-        token = await SNMLToken.deployed();
+        token = await SNM.deployed();
 
         await token.approve(gatekeeper.address, 1000, {from: sender});
         let allowance = await token.allowance(sender, gatekeeper.address);
